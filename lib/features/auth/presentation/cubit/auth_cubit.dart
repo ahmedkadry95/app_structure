@@ -1,5 +1,7 @@
 import 'package:bloc/bloc.dart';
 
+import '../../../../core/logging/app_logger.dart';
+import '../../../../core/network/failures.dart';
 import '../../domain/usecases/get_session_usecase.dart';
 import '../../domain/usecases/login_usecase.dart';
 import '../../domain/usecases/logout_usecase.dart';
@@ -22,10 +24,7 @@ class AuthCubit extends Cubit<AuthState> {
   }) async {
     emit(const AuthLoading());
     final result = await loginUseCase(username: username, password: password);
-    result.when(
-      success: (session) => emit(AuthSuccess(session)),
-      error: (failure) => emit(AuthError(failure)),
-    );
+    _emitIfOpen(result.when(success: AuthSuccess.new, failure: AuthError.new));
   }
 
   /// بتتنادى لما التطبيق يفتح وفيه توكن محفوظ — بتتأكد إنه لسه صالح.
@@ -33,14 +32,24 @@ class AuthCubit extends Cubit<AuthState> {
   Future<void> loadSession() async {
     emit(const AuthLoading());
     final result = await getSessionUseCase();
-    result.when(
-      success: (session) => emit(AuthSuccess(session)),
-      error: (failure) => emit(AuthError(failure)),
-    );
+    _emitIfOpen(result.when(success: AuthSuccess.new, failure: AuthError.new));
   }
 
   Future<void> logout() async {
-    await logoutUseCase();
-    emit(const AuthInitial());
+    try {
+      await logoutUseCase();
+      _emitIfOpen(const AuthInitial());
+    } catch (e, stackTrace) {
+      // مسح التوكن فشل (الـ keychain مقفول مثلاً). منسيبش الاستثناء يطلع
+      // للـ onPressed، وفي نفس الوقت منقولش للمستخدم إنه خرج وهو لسه داخل.
+      appLog.error('فشل تسجيل الخروج', e, stackTrace);
+      _emitIfOpen(const AuthError(UnexpectedFailure()));
+    }
+  }
+
+  /// كل الـ emits هنا بتحصل بعد await، والمستخدم ممكن يكون قافل الشاشة
+  /// في النص — من غير الحارس ده الـ Cubit بيرمي StateError.
+  void _emitIfOpen(AuthState state) {
+    if (!isClosed) emit(state);
   }
 }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../l10n/app_localizations.dart';
 import '../di/injection.dart';
 import '../network/network_info.dart';
 
@@ -44,7 +45,7 @@ class OfflineBanner extends StatelessWidget {
                               ),
                               const SizedBox(width: 8),
                               Text(
-                                'مفيش اتصال بالإنترنت',
+                                AppL10n.of(context).commonOffline,
                                 style: theme.textTheme.bodyMedium?.copyWith(
                                   color: theme.colorScheme.onErrorContainer,
                                 ),

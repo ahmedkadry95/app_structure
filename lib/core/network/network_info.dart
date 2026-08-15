@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:connectivity_plus/connectivity_plus.dart';
 
+import '../logging/app_logger.dart';
+
 /// علامة بنعلّم بيها الـ DioException اللي إحنا قطعناها قبل ما تطلع،
 /// عشان `handleDioError` يفرّق بين "مفيش نت" و"السيرفر مش راد".
 class OfflineException implements Exception {
@@ -26,8 +28,9 @@ class NetworkInfo {
   Future<bool> get isConnected async {
     try {
       return _isOnline(await _connectivity.checkConnectivity());
-    } catch (_) {
+    } catch (e, stackTrace) {
       // لو الفحص نفسه فشل، منمنعش الريكوست — نسيبه يجرب
+      appLog.error('فشل فحص الاتصال', e, stackTrace);
       return true;
     }
   }

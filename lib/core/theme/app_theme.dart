@@ -22,9 +22,7 @@ class AppTheme {
     return ThemeData(
       colorScheme: scheme,
       inputDecorationTheme: InputDecorationTheme(
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(radius),
-        ),
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(radius)),
         filled: true,
       ),
       filledButtonTheme: FilledButtonThemeData(

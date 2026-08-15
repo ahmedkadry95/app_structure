@@ -1,34 +1,54 @@
-import 'prism_error.dart';
+import 'package:equatable/equatable.dart';
 
-sealed class Failure {
-  final String message;
-  const Failure(this.message);
+/// أنواع الفشل اللي التطبيق بيفهمها.
+///
+/// مهم: مفيش نص واجهة مستخدم هنا عمداً. الطبقة دي بترجّع **نوع** بس،
+/// والترجمة بتحصل في الـ presentation (شوف `FailureL10n`). كده لو ضفنا
+/// لغة تانية مش هنلمس طبقة الشبكة خالص.
+sealed class Failure extends Equatable {
+  const Failure();
+
+  @override
+  List<Object?> get props => const [];
 }
 
 /// مفيش شبكة خالص — الريكوست اتقطع قبل ما يطلع
 class OfflineFailure extends Failure {
-  const OfflineFailure() : super('مفيش اتصال بالإنترنت، اتأكد من الشبكة');
+  const OfflineFailure();
 }
 
 /// فيه شبكة بس السيرفر مش راد أو الاتصال قطع في النص
 class NetworkFailure extends Failure {
-  const NetworkFailure() : super('في مشكلة في الاتصال بالسيرفر');
+  const NetworkFailure();
 }
 
 /// التوكن بايظ أو الجلسة خلصت (Security.5) → رجّع المستخدم للوجين
 class UnauthorizedFailure extends Failure {
-  const UnauthorizedFailure() : super('انتهت الجلسة، سجّل دخول تاني');
+  const UnauthorizedFailure();
 }
 
 /// اسم مستخدم أو باسورد غلط (Security.2)
 class InvalidCredentialsFailure extends Failure {
-  const InvalidCredentialsFailure()
-      : super('اسم المستخدم أو كلمة المرور غير صحيحة');
+  const InvalidCredentialsFailure();
 }
 
-/// أي خطأ تاني من السيرفر — شايل الـ PrismError الكامل لو اتقرا
+/// أي خطأ تاني من السيرفر.
+///
+/// `serverMessage` هو نص جاي من الـ backend نفسه — بنعرضه زي ما هو لأنه
+/// بيوصف حالة مش عارفينها مسبقاً. لو فاضي، الـ presentation بتستخدم
+/// رسالة عامة مترجمة.
 class ServerFailure extends Failure {
+  final String? serverMessage;
+  final String? errorCode;
   final int? statusCode;
-  final PrismError? error;
-  const ServerFailure(super.message, {this.statusCode, this.error});
+
+  const ServerFailure({this.serverMessage, this.errorCode, this.statusCode});
+
+  @override
+  List<Object?> get props => [serverMessage, errorCode, statusCode];
+}
+
+/// حاجة مكانتش في الحسبان (parsing فشل، bug في الكود)
+class UnexpectedFailure extends Failure {
+  const UnexpectedFailure();
 }

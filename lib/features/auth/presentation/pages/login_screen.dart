@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../../core/l10n/failure_l10n.dart';
 import '../../../../core/theme/app_theme.dart';
+import '../../../../core/widgets/language_button.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../cubit/auth_cubit.dart';
 import '../cubit/auth_state.dart';
 
@@ -37,6 +40,7 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l = AppL10n.of(context);
 
     return Scaffold(
       body: SafeArea(
@@ -48,7 +52,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 ..hideCurrentSnackBar()
                 ..showSnackBar(
                   SnackBar(
-                    content: Text(state.failure.message),
+                    content: Text(state.failure.localize(context)),
                     backgroundColor: theme.colorScheme.error,
                   ),
                 );
@@ -75,7 +79,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                         const SizedBox(height: AppTheme.spacingMd),
                         Text(
-                          'تسجيل الدخول',
+                          l.loginTitle,
                           textAlign: TextAlign.center,
                           style: theme.textTheme.headlineSmall,
                         ),
@@ -85,12 +89,12 @@ class _LoginScreenState extends State<LoginScreen> {
                           enabled: !isLoading,
                           textInputAction: TextInputAction.next,
                           autocorrect: false,
-                          decoration: const InputDecoration(
-                            labelText: 'اسم المستخدم',
-                            prefixIcon: Icon(Icons.person_outline),
+                          decoration: InputDecoration(
+                            labelText: l.loginUsername,
+                            prefixIcon: const Icon(Icons.person_outline),
                           ),
                           validator: (v) => (v == null || v.trim().isEmpty)
-                              ? 'اكتب اسم المستخدم'
+                              ? l.loginUsernameRequired
                               : null,
                         ),
                         const SizedBox(height: AppTheme.spacingMd),
@@ -101,7 +105,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           textInputAction: TextInputAction.done,
                           onFieldSubmitted: (_) => isLoading ? null : _submit(),
                           decoration: InputDecoration(
-                            labelText: 'كلمة المرور',
+                            labelText: l.loginPassword,
                             prefixIcon: const Icon(Icons.lock_outline),
                             suffixIcon: IconButton(
                               icon: Icon(
@@ -115,7 +119,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                           ),
                           validator: (v) => (v == null || v.isEmpty)
-                              ? 'اكتب كلمة المرور'
+                              ? l.loginPasswordRequired
                               : null,
                         ),
                         const SizedBox(height: AppTheme.spacingLg),
@@ -128,8 +132,10 @@ class _LoginScreenState extends State<LoginScreen> {
                                     strokeWidth: 2,
                                   ),
                                 )
-                              : const Text('دخول'),
+                              : Text(l.loginSubmit),
                         ),
+                        const SizedBox(height: AppTheme.spacingSm),
+                        const Center(child: LanguageButton()),
                       ],
                     ),
                   ),

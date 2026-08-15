@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
 
 import 'core/di/injection.dart';
+import 'core/locale/locale_cubit.dart';
 import 'core/network/token_store.dart';
 import 'core/router/app_router.dart';
 import 'core/theme/app_theme.dart';
 import 'core/widgets/offline_banner.dart';
 import 'features/auth/presentation/cubit/auth_cubit.dart';
+import 'l10n/app_localizations.dart';
 
 class App extends StatefulWidget {
   const App({super.key});
@@ -21,23 +22,25 @@ class _AppState extends State<App> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (_) => sl<AuthCubit>(),
-      child: MaterialApp.router(
-        title: 'Qahwa Sofa',
-        debugShowCheckedModeBanner: false,
-        theme: AppTheme.light,
-        darkTheme: AppTheme.dark,
-        routerConfig: _router,
-        locale: const Locale('ar'),
-        supportedLocales: const [Locale('ar'), Locale('en')],
-        localizationsDelegates: const [
-          GlobalMaterialLocalizations.delegate,
-          GlobalWidgetsLocalizations.delegate,
-          GlobalCupertinoLocalizations.delegate,
-        ],
-        builder: (context, child) => OfflineBanner(
-          child: child ?? const SizedBox.shrink(),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(create: (_) => sl<LocaleCubit>()),
+        BlocProvider(create: (_) => sl<AuthCubit>()),
+      ],
+      // ده هو "التبديل وقت التشغيل": الـ BlocBuilder بيعيد بناء الـ
+      // MaterialApp بالـ locale الجديدة، وFlutter بيقلب الاتجاه والنصوص كلها
+      child: BlocBuilder<LocaleCubit, Locale>(
+        builder: (context, locale) => MaterialApp.router(
+          onGenerateTitle: (context) => AppL10n.of(context).appTitle,
+          debugShowCheckedModeBanner: false,
+          theme: AppTheme.light,
+          darkTheme: AppTheme.dark,
+          routerConfig: _router,
+          locale: locale,
+          supportedLocales: AppL10n.supportedLocales,
+          localizationsDelegates: AppL10n.localizationsDelegates,
+          builder: (context, child) =>
+              OfflineBanner(child: child ?? const SizedBox.shrink()),
         ),
       ),
     );

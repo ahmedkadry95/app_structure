@@ -14,7 +14,7 @@ class AuthRemoteDataSource {
     required String username,
     required String password,
   }) async {
-    final res = await dio.get(
+    final res = await dio.get<dynamic>(
       '/security/login',
       queryParameters: {
         'usr': username,
@@ -26,7 +26,7 @@ class AuthRemoteDataSource {
   }
 
   Future<SessionModel> getSession() async {
-    final res = await dio.get('/security/session');
+    final res = await dio.get<dynamic>('/security/session');
     return SessionModel.fromResponse(res.data);
   }
 }

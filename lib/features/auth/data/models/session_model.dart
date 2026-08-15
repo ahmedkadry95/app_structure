@@ -12,25 +12,29 @@ class SessionModel extends Session {
     required super.currency,
   });
 
+  /// بنقرا بتسامح: أي حقل ممكن يرجع رقم بدل نص من سيرفر Delphi،
+  /// و cast صريح كان هيرمي TypeError ويفشّل اللوجين كله بسبب حقل واحد.
   factory SessionModel.fromJson(Map<String, dynamic> json) => SessionModel(
-        sid: json['sid'] as String? ?? '',
-        username: json['username'] as String? ?? '',
-        employeeName: json['employeename'] as String? ?? '',
-        token: json['token'] as String? ?? '',
-        nonce: json['nonce'] as String? ?? '',
-        subsidiaryName: json['subsidiaryname'] as String? ?? '',
-        storeName: json['storename'] as String? ?? '',
-        currency: json['basecurrencycodealpha'] as String? ?? '',
-      );
+    sid: _str(json['sid']),
+    username: _str(json['username']),
+    employeeName: _str(json['employeename']),
+    token: _str(json['token']),
+    nonce: _str(json['nonce']),
+    subsidiaryName: _str(json['subsidiaryname']),
+    storeName: _str(json['storename']),
+    currency: _str(json['basecurrencycodealpha']),
+  );
+
+  static String _str(dynamic v) => v?.toString() ?? '';
 
   /// Prism بيرجع اللوجين جوه Array: `[{...session...}]`
   /// الدالة دي بتتعامل مع Array أو Object عشان أي endpoint تاني.
   factory SessionModel.fromResponse(dynamic data) {
     final map = switch (data) {
-      List() when data.isNotEmpty => data.first as Map<String, dynamic>,
-      Map<String, dynamic>() => data,
+      final List<dynamic> l when l.isNotEmpty && l.first is Map => l.first,
+      final Map<Object?, Object?> m => m,
       _ => throw const FormatException('شكل رد غير متوقع من السيرفر'),
     };
-    return SessionModel.fromJson(map);
+    return SessionModel.fromJson((map as Map).cast<String, dynamic>());
   }
 }

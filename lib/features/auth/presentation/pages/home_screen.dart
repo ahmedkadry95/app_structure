@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../../core/l10n/failure_l10n.dart';
 import '../../../../core/theme/app_theme.dart';
+import '../../../../core/widgets/language_button.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../domain/entities/session.dart';
 import '../cubit/auth_cubit.dart';
 import '../cubit/auth_state.dart';
@@ -28,13 +31,16 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppL10n.of(context);
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text('الرئيسية'),
+        title: Text(l.homeTitle),
         actions: [
+          const LanguageButton(),
           IconButton(
             icon: const Icon(Icons.logout),
-            tooltip: 'خروج',
+            tooltip: l.homeLogout,
             onPressed: () => context.read<AuthCubit>().logout(),
           ),
         ],
@@ -43,11 +49,11 @@ class _HomeScreenState extends State<HomeScreen> {
         builder: (context, state) => switch (state) {
           AuthSuccess(:final session) => _SessionDetails(session: session),
           AuthError(:final failure) => _CenteredMessage(
-            icon: Icons.error_outline,
-            message: failure.message,
+            message: failure.localize(context),
             onRetry: () => context.read<AuthCubit>().loadSession(),
           ),
-          _ => const Center(child: CircularProgressIndicator()),
+          AuthInitial() ||
+          AuthLoading() => const Center(child: CircularProgressIndicator()),
         },
       ),
     );
@@ -61,6 +67,7 @@ class _SessionDetails extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l = AppL10n.of(context);
 
     return ListView(
       padding: const EdgeInsets.all(AppTheme.spacingMd),
@@ -87,10 +94,7 @@ class _SessionDetails extends StatelessWidget {
                         session.employeeName,
                         style: theme.textTheme.titleMedium,
                       ),
-                      Text(
-                        session.username,
-                        style: theme.textTheme.bodySmall,
-                      ),
+                      Text(session.username, style: theme.textTheme.bodySmall),
                     ],
                   ),
                 ),
@@ -99,10 +103,10 @@ class _SessionDetails extends StatelessWidget {
           ),
         ),
         const SizedBox(height: AppTheme.spacingMd),
-        _InfoTile(label: 'الشركة', value: session.subsidiaryName),
-        _InfoTile(label: 'الفرع', value: session.storeName),
-        _InfoTile(label: 'العملة', value: session.currency),
-        _InfoTile(label: 'رقم الجلسة', value: session.sid),
+        _InfoTile(label: l.homeCompany, value: session.subsidiaryName),
+        _InfoTile(label: l.homeBranch, value: session.storeName),
+        _InfoTile(label: l.homeCurrency, value: session.currency),
+        _InfoTile(label: l.homeSessionId, value: session.sid),
       ],
     );
   }
@@ -124,14 +128,9 @@ class _InfoTile extends StatelessWidget {
 }
 
 class _CenteredMessage extends StatelessWidget {
-  final IconData icon;
   final String message;
   final VoidCallback onRetry;
-  const _CenteredMessage({
-    required this.icon,
-    required this.message,
-    required this.onRetry,
-  });
+  const _CenteredMessage({required this.message, required this.onRetry});
 
   @override
   Widget build(BuildContext context) => Center(
@@ -140,14 +139,18 @@ class _CenteredMessage extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, size: 48, color: Theme.of(context).colorScheme.error),
+          Icon(
+            Icons.error_outline,
+            size: 48,
+            color: Theme.of(context).colorScheme.error,
+          ),
           const SizedBox(height: AppTheme.spacingMd),
           Text(message, textAlign: TextAlign.center),
           const SizedBox(height: AppTheme.spacingLg),
           OutlinedButton.icon(
             onPressed: onRetry,
             icon: const Icon(Icons.refresh),
-            label: const Text('حاول تاني'),
+            label: Text(AppL10n.of(context).commonRetry),
           ),
         ],
       ),

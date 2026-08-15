@@ -1,0 +1,29 @@
+{
+  "@@locale": "ar",
+
+  "appTitle": "قهوة صوفا",
+
+  "loginTitle": "تسجيل الدخول",
+  "loginUsername": "اسم المستخدم",
+  "loginPassword": "كلمة المرور",
+  "loginSubmit": "دخول",
+  "loginUsernameRequired": "اكتب اسم المستخدم",
+  "loginPasswordRequired": "اكتب كلمة المرور",
+
+  "homeTitle": "الرئيسية",
+  "homeLogout": "خروج",
+  "homeCompany": "الشركة",
+  "homeBranch": "الفرع",
+  "homeCurrency": "العملة",
+  "homeSessionId": "رقم الجلسة",
+
+  "commonRetry": "حاول تاني",
+  "commonOffline": "مفيش اتصال بالإنترنت",
+
+  "errorOffline": "مفيش اتصال بالإنترنت، اتأكد من الشبكة",
+  "errorNetwork": "في مشكلة في الاتصال بالسيرفر",
+  "errorSessionExpired": "انتهت الجلسة، سجّل دخول تاني",
+  "errorInvalidCredentials": "اسم المستخدم أو كلمة المرور غير صحيحة",
+  "errorServer": "حصل خطأ من السيرفر",
+  "errorUnexpected": "حصل خطأ غير متوقع"
+}

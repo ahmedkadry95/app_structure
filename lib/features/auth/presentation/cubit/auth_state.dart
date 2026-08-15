@@ -1,22 +1,21 @@
+import 'package:equatable/equatable.dart';
+
 import '../../../../core/network/failures.dart';
 import '../../domain/entities/session.dart';
 
-sealed class AuthState {
+sealed class AuthState extends Equatable {
   const AuthState();
+
+  @override
+  List<Object?> get props => const [];
 }
 
 class AuthInitial extends AuthState {
   const AuthInitial();
-
-  @override
-  String toString() => 'AuthInitial';
 }
 
 class AuthLoading extends AuthState {
   const AuthLoading();
-
-  @override
-  String toString() => 'AuthLoading';
 }
 
 class AuthSuccess extends AuthState {
@@ -24,16 +23,15 @@ class AuthSuccess extends AuthState {
   const AuthSuccess(this.session);
 
   @override
-  String toString() =>
-      'AuthSuccess(${session.username} — ${session.subsidiaryName}/${session.storeName})';
+  List<Object?> get props => [session];
 }
 
-/// شايلة الـ Failure كاملة مش String بس —
-/// عشان الـ UI يقدر يفرّق بين الأنواع (بيانات غلط ≠ جلسة خلصت ≠ نت واقع)
+/// شايلة الـ Failure كاملة مش String —
+/// عشان الـ UI يقدر يفرّق بين الأنواع ويترجمها بنفسه
 class AuthError extends AuthState {
   final Failure failure;
   const AuthError(this.failure);
 
   @override
-  String toString() => 'AuthError(${failure.runtimeType}: ${failure.message})';
+  List<Object?> get props => [failure];
 }

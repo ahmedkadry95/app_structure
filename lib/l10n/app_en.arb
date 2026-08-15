@@ -1,0 +1,29 @@
+{
+  "@@locale": "en",
+
+  "appTitle": "Qahwa Sofa",
+
+  "loginTitle": "Sign in",
+  "loginUsername": "Username",
+  "loginPassword": "Password",
+  "loginSubmit": "Sign in",
+  "loginUsernameRequired": "Enter your username",
+  "loginPasswordRequired": "Enter your password",
+
+  "homeTitle": "Home",
+  "homeLogout": "Sign out",
+  "homeCompany": "Company",
+  "homeBranch": "Branch",
+  "homeCurrency": "Currency",
+  "homeSessionId": "Session ID",
+
+  "commonRetry": "Try again",
+  "commonOffline": "No internet connection",
+
+  "errorOffline": "No internet connection — check your network",
+  "errorNetwork": "Could not reach the server",
+  "errorSessionExpired": "Your session expired, please sign in again",
+  "errorInvalidCredentials": "Incorrect username or password",
+  "errorServer": "The server returned an error",
+  "errorUnexpected": "Something went wrong"
+}

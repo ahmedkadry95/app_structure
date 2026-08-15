@@ -9,6 +9,5 @@ class LoginUseCase {
   Future<Result<Session>> call({
     required String username,
     required String password,
-  }) =>
-      repository.login(username: username, password: password);
+  }) => repository.login(username: username, password: password);
 }

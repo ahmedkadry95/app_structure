@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 
+import '../logging/app_logger.dart';
 import 'dio_error_handler.dart';
 import 'failures.dart';
 import 'result.dart';
@@ -12,9 +13,16 @@ extension ResultX<T> on Future<T> {
     try {
       return Success(await this);
     } on DioException catch (e) {
-      return Error(handleDioError(e));
-    } catch (_) {
-      return Error(const ServerFailure('حصل خطأ غير متوقع'));
+      final failure = handleDioError(e);
+      appLog.warning('${failure.runtimeType} ← ${e.type.name}');
+      return Failed(failure);
+    } catch (e, stackTrace) {
+      // مهم: بنمسك الـ stack trace هنا. الـ catch ده هو آخر حاجة بين
+      // أي bug في التطبيق وبين اختفاءه للأبد — من غير التسجيل ده،
+      // FormatException من parsing أو TypeError بيبقى مجرد
+      // "حصل خطأ غير متوقع" على الشاشة وخلاص.
+      appLog.error('exception غير متوقع في toResult', e, stackTrace);
+      return const Failed(UnexpectedFailure());
     }
   }
 }

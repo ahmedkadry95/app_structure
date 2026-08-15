@@ -1,6 +1,8 @@
+import 'package:equatable/equatable.dart';
+
 /// جلسة Prism — الحقول اللي التطبيق محتاجها بس،
 /// مش الـ 100+ حقل اللي السيرفر بيرجعهم.
-class Session {
+class Session extends Equatable {
   final String sid;
   final String username;
   final String employeeName;
@@ -20,4 +22,27 @@ class Session {
     required this.storeName,
     required this.currency,
   });
+
+  @override
+  List<Object?> get props => [
+    sid,
+    username,
+    employeeName,
+    token,
+    nonce,
+    subsidiaryName,
+    storeName,
+    currency,
+  ];
+
+  /// التوكن والـ nonce بيفضلوا في الـ props (عشان المساواة تبقى صح) بس
+  /// **ممنوع** يظهروا في أي نص.
+  ///
+  /// من غير الـ override ده، `Equatable.stringify` بيطبع كل الـ props،
+  /// و`TalkerBlocObserver` بيطبع كل state — يعني التوكن كان هيتكتب
+  /// في اللوج مع كل لوجين ناجح.
+  @override
+  String toString() =>
+      'Session($username, $employeeName, $subsidiaryName/$storeName, '
+      'token: ***)';
 }
