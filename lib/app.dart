@@ -27,8 +27,6 @@ class _AppState extends State<App> {
         BlocProvider(create: (_) => sl<LocaleCubit>()),
         BlocProvider(create: (_) => sl<AuthCubit>()),
       ],
-      // ده هو "التبديل وقت التشغيل": الـ BlocBuilder بيعيد بناء الـ
-      // MaterialApp بالـ locale الجديدة، وFlutter بيقلب الاتجاه والنصوص كلها
       child: BlocBuilder<LocaleCubit, Locale>(
         builder: (context, locale) => MaterialApp.router(
           onGenerateTitle: (context) => AppL10n.of(context).appTitle,

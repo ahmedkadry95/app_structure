@@ -2,11 +2,11 @@ import 'dart:ui';
 
 import 'package:bloc/bloc.dart';
 import 'package:flutter/material.dart';
-import 'package:talker_bloc_logger/talker_bloc_logger.dart';
 
 import 'app.dart';
 import 'core/di/injection.dart' as di;
 import 'core/logging/app_logger.dart';
+import 'core/logging/compact_bloc_observer.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -30,21 +30,8 @@ Future<void> main() async {
     return true;
   };
 
-  // كل تغيير حالة في أي Cubit بيتسجّل.
-  //
-  // `printChanges` لازم تتفعّل بإيدينا: الافتراضي بيسجّل الـ transitions
-  // بتاعة الـ Bloc، والـ Cubit مبيعملش transitions — بيعمل changes. من غير
-  // السطر ده الـ observer بيتركّب وميسجّلش ولا حاجة.
-  //
-  // ملحوظة: `Session.toString` بيخفي التوكن — لولاه كان هيتطبع هنا
-  Bloc.observer = TalkerBlocObserver(
-    talker: appLog.talker,
-    settings: const TalkerBlocLoggerSettings(
-      printChanges: true,
-      printCreations: true,
-      printClosings: true,
-    ),
-  );
+  // سطر واحد لكل تغيير حالة بدل 6
+  Bloc.observer = CompactBlocObserver(appLog);
 
   runApp(const App());
 }

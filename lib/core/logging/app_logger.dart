@@ -23,6 +23,8 @@ class AppLogger {
       logger: TalkerLogger(
         settings: TalkerLoggerSettings(
           level: kDebugMode ? LogLevel.debug : LogLevel.error,
+          // الافتراضي 110 — بيرسم إطار عرضه شاشة كاملة حوالين كل سطر
+          maxLineWidth: 64,
         ),
       ),
     ),

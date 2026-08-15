@@ -13,9 +13,10 @@ extension ResultX<T> on Future<T> {
     try {
       return Success(await this);
     } on DioException catch (e) {
-      final failure = handleDioError(e);
-      appLog.warning('${failure.runtimeType} ← ${e.type.name}');
-      return Failed(failure);
+      // مفيش لوج هنا عن قصد: الـ PrettyApiLogger سجّل الريكوست بالفعل
+      // بالـ status وسبب السيرفر، والـ BlocObserver هيسجّل الحالة الناتجة.
+      // تسجيل تالت هنا كان بيكرر نفس المعلومة تلات مرات.
+      return Failed(handleDioError(e));
     } catch (e, stackTrace) {
       // مهم: بنمسك الـ stack trace هنا. الـ catch ده هو آخر حاجة بين
       // أي bug في التطبيق وبين اختفاءه للأبد — من غير التسجيل ده،

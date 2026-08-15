@@ -23,17 +23,12 @@ class ApiClient {
            connectTimeout: const Duration(seconds: 20),
            receiveTimeout: const Duration(seconds: 20),
            headers: {
-             // version=2 مطلوبة من Prism API
              'Accept': 'application/json, text/plain, version=2',
              'Accept-Language': 'en-US,en;q=0.9,ar;q=0.8',
            },
          ),
        ) {
-    // الترتيب مقصود:
-    // 1) الأوفلاين بيقطع الأول قبل أي شغل تاني
-    // 2) التوكن بيتحقن
-    // 3) الجلسة الميتة بتتمسح
-    // 4) اللوج آخر حاجة عشان يشوف الهيدرز بعد ما اتحقنت
+    /// Should be sorted
     dio.interceptors.add(ConnectivityInterceptor(networkInfo));
     dio.interceptors.add(AuthInterceptor(tokenStore));
     dio.interceptors.add(SessionExpiredInterceptor(tokenStore));
