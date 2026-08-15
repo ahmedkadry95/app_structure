@@ -5,8 +5,14 @@ sealed class Failure {
   const Failure(this.message);
 }
 
+/// مفيش شبكة خالص — الريكوست اتقطع قبل ما يطلع
+class OfflineFailure extends Failure {
+  const OfflineFailure() : super('مفيش اتصال بالإنترنت، اتأكد من الشبكة');
+}
+
+/// فيه شبكة بس السيرفر مش راد أو الاتصال قطع في النص
 class NetworkFailure extends Failure {
-  const NetworkFailure() : super('في مشكلة في الاتصال بالإنترنت');
+  const NetworkFailure() : super('في مشكلة في الاتصال بالسيرفر');
 }
 
 /// التوكن بايظ أو الجلسة خلصت (Security.5) → رجّع المستخدم للوجين

@@ -10,5 +10,5 @@ abstract class AuthRepository {
 
   Future<Result<Session>> getSession();
 
-  void logout();
+  Future<void> logout();
 }

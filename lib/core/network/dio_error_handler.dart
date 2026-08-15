@@ -1,12 +1,16 @@
 import 'package:dio/dio.dart';
 
 import 'failures.dart';
+import 'network_info.dart';
 import 'prism_error.dart';
 
 /// بيترجم DioException → Failure واضحة.
 /// الـ mapping معمول على errorcode بتاع Prism نفسه مش الـ HTTP status بس،
 /// لأن الكود أدق (Security.2 = بيانات غلط، Security.5 = توكن بايظ).
 Failure handleDioError(DioException e) {
+  // إحنا اللي قطعنا الريكوست في الـ ConnectivityInterceptor — مطلعش أصلاً
+  if (e.error is OfflineException) return const OfflineFailure();
+
   switch (e.type) {
     case DioExceptionType.connectionTimeout:
     case DioExceptionType.sendTimeout:

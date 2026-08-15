@@ -15,9 +15,12 @@ class AuthRepositoryImpl implements AuthRepository {
   Future<Result<Session>> login({
     required String username,
     required String password,
-  }) => remote.login(username: username, password: password).then((session) {
-    tokenStore.token = session.token;
-    tokenStore.nonce = session.nonce;
+  }) => remote.login(username: username, password: password).then((
+    session,
+  ) async {
+    // نجاح اللوجين → نحفظ التوكن، والـ AuthInterceptor هيحقنه في كل
+    // الريكوستات الجاية تلقائي
+    await tokenStore.save(token: session.token, nonce: session.nonce);
     return session;
   }).toResult();
 
@@ -25,5 +28,5 @@ class AuthRepositoryImpl implements AuthRepository {
   Future<Result<Session>> getSession() => remote.getSession().toResult();
 
   @override
-  void logout() => tokenStore.clear();
+  Future<void> logout() => tokenStore.clear();
 }
