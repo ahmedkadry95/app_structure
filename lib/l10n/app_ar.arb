@@ -10,6 +10,14 @@
   "loginUsernameRequired": "اكتب اسم المستخدم",
   "loginPasswordRequired": "اكتب كلمة المرور",
 
+  "homeGreeting": "أهلاً، {name}",
+  "@homeGreeting": {
+    "description": "ترحيب فوق بيانات الجلسة في الشاشة الرئيسية",
+    "placeholders": {
+      "name": { "type": "String", "example": "SYSADMIN" }
+    }
+  },
+
   "homeTitle": "الرئيسية",
   "homeLogout": "خروج",
   "homeCompany": "الشركة",
@@ -25,5 +33,7 @@
   "errorSessionExpired": "انتهت الجلسة، سجّل دخول تاني",
   "errorInvalidCredentials": "اسم المستخدم أو كلمة المرور غير صحيحة",
   "errorServer": "حصل خطأ من السيرفر",
-  "errorUnexpected": "حصل خطأ غير متوقع"
+  "errorUnexpected": "حصل خطأ غير متوقع",
+  "test": "تجريبي"
+
 }

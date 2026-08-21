@@ -1,0 +1,346 @@
+<!doctype html>
+<html dir="rtl" lang="ar">
+<head>
+<meta charset="utf-8">
+<title>الـ Dependency Injection في المشروع</title>
+<style>
+  @page { size: A4; margin: 18mm 16mm 16mm 16mm; }
+
+  :root {
+    --ink: #14201c;
+    --muted: #5c6b66;
+    --line: #dfe6e3;
+    --accent: #0f6e56;
+    --accent-soft: #e8f4f0;
+    --code-bg: #f5f7f6;
+    --warn-bg: #fdf3e7;
+    --warn-line: #e0a03a;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    font-family: "SF Arabic", "Geeza Pro", -apple-system, sans-serif;
+    color: var(--ink);
+    font-size: 10.5pt;
+    line-height: 1.85;
+    margin: 0;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* الكود دايماً من الشمال لليمين */
+  code, pre, .ltr { direction: ltr; text-align: left; unicode-bidi: isolate; }
+
+  code {
+    /* SF Arabic بعد الـ mono — المتصفح بياخد أول خط فيه الحرف،
+       فاللاتيني بيطلع mono والعربي بيطلع متصل صح */
+    font-family: "SF Mono", Menlo, "SF Arabic", "Geeza Pro", monospace;
+    font-size: 0.86em;
+    background: var(--code-bg);
+    padding: 0.12em 0.4em;
+    border-radius: 3px;
+    border: 1px solid var(--line);
+    white-space: nowrap;
+  }
+
+  pre {
+    font-family: "SF Mono", Menlo, "SF Arabic", "Geeza Pro", monospace;
+    font-size: 8.6pt;
+    line-height: 1.8;
+    background: var(--code-bg);
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    padding: 11px 14px;
+    overflow: visible;
+    white-space: pre-wrap;
+    page-break-inside: avoid;
+    margin: 12px 0;
+  }
+  pre code { background: none; border: none; padding: 0; white-space: pre-wrap; }
+
+  h1 {
+    font-size: 21pt; font-weight: 600; margin: 0 0 4px;
+    color: var(--accent); letter-spacing: -0.01em;
+  }
+  .sub { color: var(--muted); font-size: 9.5pt; margin: 0 0 4px; }
+  .sub code { background: none; border: none; padding: 0; }
+
+  header {
+    border-bottom: 2.5px solid var(--accent);
+    padding-bottom: 12px; margin-bottom: 26px;
+  }
+
+  h2 {
+    font-size: 14pt; font-weight: 600; color: var(--accent);
+    margin: 30px 0 10px; padding-bottom: 5px;
+    border-bottom: 1px solid var(--line);
+    page-break-after: avoid;
+  }
+  h3 {
+    font-size: 11.5pt; font-weight: 600; margin: 20px 0 7px;
+    page-break-after: avoid;
+  }
+
+  p { margin: 9px 0; }
+  ul { margin: 9px 0; padding-right: 20px; padding-left: 0; }
+  li { margin: 4px 0; }
+
+  table {
+    width: 100%; border-collapse: collapse; margin: 14px 0;
+    font-size: 9pt; page-break-inside: avoid;
+  }
+  th {
+    background: var(--accent-soft); color: #0b4d3c;
+    font-weight: 600; text-align: right;
+    padding: 7px 10px; border: 1px solid var(--line);
+  }
+  td { padding: 6px 10px; border: 1px solid var(--line); vertical-align: top; }
+  td code { white-space: nowrap; font-size: 0.88em; }
+  tr:nth-child(even) td { background: #fafbfb; }
+
+  .note {
+    background: var(--warn-bg);
+    border-right: 3px solid var(--warn-line);
+    border-radius: 0 5px 5px 0;
+    padding: 10px 14px; margin: 14px 0;
+    page-break-inside: avoid;
+  }
+  .note p:first-child { margin-top: 0; }
+  .note p:last-child { margin-bottom: 0; }
+
+  .good { color: #0f6e56; font-weight: 600; }
+  .bad { color: #a32d2d; font-weight: 600; }
+
+  .flow {
+    font-family: "SF Arabic", "Geeza Pro", "SF Mono", Menlo, monospace;
+    font-size: 8.4pt; line-height: 1.75;
+    background: var(--code-bg); border: 1px solid var(--line);
+    border-radius: 6px; padding: 12px 14px; margin: 12px 0;
+    direction: rtl; text-align: right; page-break-inside: avoid;
+  }
+
+  footer {
+    margin-top: 34px; padding-top: 12px;
+    border-top: 1px solid var(--line);
+    color: var(--muted); font-size: 8.5pt;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>الـ Dependency Injection في المشروع</h1>
+  <p class="sub">مرجع لأنواع التسجيل في <code>get_it</code> وليه اخترنا كل واحدة</p>
+  <p class="sub">الحزمة: <code>get_it ^9.2.1</code> &nbsp;·&nbsp; ملف التركيب: <code>lib/core/di/injection.dart</code></p>
+</header>
+
+<h2>المقارنة السريعة</h2>
+
+<table>
+  <tr><th>النوع</th><th>كام نسخة؟</th><th>بتتعمل امتى؟</th><th>مين بيقفلها؟</th></tr>
+  <tr><td><code>registerFactory</code></td><td>جديدة كل نداء</td><td>وقت النداء</td><td>انت / اللي بياخدها</td></tr>
+  <tr><td><code>registerLazySingleton</code></td><td>واحدة</td><td><strong>أول</strong> نداء</td><td><code>get_it</code> عند <code>reset()</code></td></tr>
+  <tr><td><code>registerSingleton</code></td><td>واحدة</td><td><strong>فوراً</strong> وقت التسجيل</td><td><code>get_it</code> عند <code>reset()</code></td></tr>
+  <tr><td><code>registerFactoryParam</code></td><td>جديدة كل نداء</td><td>وقت النداء بمعطيات</td><td>انت</td></tr>
+  <tr><td><code>registerCachedFactory</code></td><td>واحدة طول ما حد ماسكها</td><td>وقت النداء</td><td>الـ GC</td></tr>
+  <tr><td><code>*Async</code></td><td>حسب النوع</td><td>مع <code>await</code></td><td>حسب النوع</td></tr>
+</table>
+
+<h2>١) registerFactory — نسخة جديدة كل مرة</h2>
+
+<pre><code>sl.registerFactory(() =&gt; LoginUseCase(sl()));
+
+final a = sl&lt;LoginUseCase&gt;();
+final b = sl&lt;LoginUseCase&gt;();
+identical(a, b);   // false</code></pre>
+
+<p><strong>استخدمها لما:</strong> الحاجة ليها حالة مؤقتة، أو حد تاني بيمتلكها ويقفلها.</p>
+<p><strong>في المشروع:</strong> كل الـ Cubits والـ UseCases.</p>
+
+<div class="note">
+  <p><strong>⚠️ مهم:</strong> <code>get_it</code> <strong>مبيتابعش</strong> نسخ الـ factory ولا بيقفلها. انت مسؤول عنها.</p>
+</div>
+
+<h3>قاعدة: أي Cubit مع BlocProvider لازم يكون factory</h3>
+
+<pre><code>BlocProvider(create: (_) =&gt; sl&lt;MyCubit&gt;())</code></pre>
+
+<p>كلمة <code>create</code> معناها إن البروفايدر <strong>بيمتلك</strong> الـ Cubit، فبينادي <code>close()</code> عليه لما الويدجت يتشال. لو الـ Cubit مسجّل <code>lazySingleton</code>، <code>get_it</code> هيفضل ماسك النسخة المقفولة ويوزّعها — وأول <code>emit</code> بعد كده يرمي <code>StateError</code>.</p>
+
+<pre><code>sl.registerFactory(() =&gt; LocaleCubit(sl()));        // ✅ صح
+sl.registerLazySingleton(() =&gt; LocaleCubit(sl()));  // ❌ لغم</code></pre>
+
+<p>البديل لو محتاج singleton فعلاً: <code>BlocProvider.value(value: sl&lt;MyCubit&gt;())</code> — دي بتقول للبروفايدر «انت مش المالك، متقفلهاش».</p>
+
+<h2>٢) registerLazySingleton — واحدة، بتتأجل</h2>
+
+<pre><code>sl.registerLazySingleton(() =&gt; ApiClient(tokenStore: sl(), ...));
+
+// وقت التسجيل: مفيش حاجة اتعملت
+final a = sl&lt;ApiClient&gt;();   // ← دلوقتي اتعملت
+final b = sl&lt;ApiClient&gt;();   // ← نفس النسخة</code></pre>
+
+<p><strong>دي الافتراضي اللي تبدأ بيه.</strong> بتوفّر وقت بدء التطبيق، وبتخلي ترتيب السطور أقل حساسية لأن الدالة بتتنفّذ لما حد يطلب — وساعتها كل حاجة تكون متسجّلة.</p>
+
+<p><strong>في المشروع:</strong> <code>ApiClient</code>, <code>NetworkInfo</code>, <code>Connectivity</code>, <code>SecureStore</code>, <code>AuthRemoteDataSource</code>, <code>AuthRepository</code>.</p>
+
+<h2>٣) registerSingleton — واحدة، دلوقتي حالاً</h2>
+
+<pre><code>registerLazySingleton(() =&gt; X())   // دالة → استناها
+registerSingleton(X())             // كائن → معمول خلاص</code></pre>
+
+<p><strong>استخدمها لما:</strong> الكائن محتاج تحضير <code>async</code> قبله، أو لازم يكون موجود قبل أي حاجة تانية.</p>
+
+<p><strong>في المشروع — تلات حالات، كل واحدة ليها سبب:</strong></p>
+
+<pre><code>sl.registerSingleton(logger);                                 // ١
+sl.registerSingleton(await SharedPreferences.getInstance());  // ٢
+sl.registerSingleton(tokenStore);                             // ٣</code></pre>
+
+<ul>
+  <li><strong>AppLogger</strong> — أول سطر في <code>init()</code> عشان يقدر يسجّل فشل التهيئة نفسها</li>
+  <li><strong>SharedPreferences</strong> — <code>getInstance()</code> دالة async، و<code>registerLazySingleton</code> بياخد دالة عادية. وكمان <code>LocaleCubit</code> بيقراها بشكل <strong>متزامن</strong> في الكونستركتور</li>
+  <li><strong>TokenStore</strong> — الحالة الأهم، شوف تحت</li>
+</ul>
+
+<h2>الحالة الخاصة: TokenStore</h2>
+
+<pre><code>final tokenStore = TokenStore(sl());   // ١) اعمله
+await tokenStore.restore();            // ٢) املاه من الـ keychain
+sl.registerSingleton(tokenStore);      // ٣) وبعدين سجّله</code></pre>
+
+<p><strong>ليه تلات خطوات؟</strong> لأن <code>restore()</code> دالة <code>async</code>، ولازم تخلص <strong>قبل</strong> ما الـ router يسأل <code>isLoggedIn</code>:</p>
+
+<div class="flow">
+التطبيق يفتح<br>
+&nbsp;&nbsp;← الراوتر يسأل: isLoggedIn؟<br>
+&nbsp;&nbsp;&nbsp;&nbsp;← TokenStore لسه ما قراش من الـ keychain<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;← يقول «لأ»<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;← <span class="bad">المستخدم يترمي على اللوجين وهو معاه جلسة صالحة</span>
+</div>
+
+<p>مينفعش <code>registerLazySingleton(() async =&gt; ...)</code> — الدالة لازم تكون sync.</p>
+
+<h2>٤) registerFactoryParam — نسخة بمعطيات وقت التشغيل</h2>
+
+<pre><code>sl.registerFactoryParam&lt;ProductDetailsCubit, String, void&gt;(
+  (productId, _) =&gt; ProductDetailsCubit(sl(), productId: productId),
+);
+
+BlocProvider(
+  create: (_) =&gt; sl&lt;ProductDetailsCubit&gt;(param1: '12345'),
+  child: const ProductDetailsScreen(),
+)</code></pre>
+
+<p><code>&lt;T, P1, P2&gt;</code> — لو محتاج معطى واحد بس، حط <code>void</code> مكان التاني.</p>
+
+<p><strong>من غيرها</strong> كنت هتضطر تعمل الـ Cubit من غير الـ id وبعدين تبعته بميثود منفصلة — وده بيسيب فجوة إن الـ Cubit موجود في حالة ناقصة.</p>
+
+<p>مش مستخدمة في المشروع دلوقتي، بس هتحتاجها في أول شاشة تفاصيل.</p>
+
+<h2>٥) registerCachedFactory — الوسط</h2>
+
+<pre><code>sl.registerCachedFactory(() =&gt; HeavyImageCache());</code></pre>
+
+<p>بيدي نفس النسخة طول ما فيه حد ماسكها. أول ما الـ GC يلمّها، النداء الجاي بيعمل واحدة جديدة. نادرة — مفيدة لحاجات تقيلة عايز تشاركها مؤقتاً من غير ما تفضل في الذاكرة للأبد.</p>
+
+<h2>٦) الأنواع الـ Async</h2>
+
+<pre><code>sl.registerSingletonAsync&lt;TokenStore&gt;(() async {
+  final store = TokenStore(sl());
+  await store.restore();
+  return store;
+});
+
+// وفي main
+await sl.allReady();
+runApp(const App());</code></pre>
+
+<p>ولما حاجة async تعتمد على حاجة async تانية:</p>
+
+<pre><code>sl.registerSingletonWithDependencies&lt;ApiClient&gt;(
+  () =&gt; ApiClient(tokenStore: sl(), ...),
+  dependsOn: [TokenStore],
+);</code></pre>
+
+<p><strong>ليه المشروع مش مستخدمها؟</strong> الطريقة اليدوية أوضح في ملف صغير — الترتيب مقروء من فوق لتحت ومفيش سحر مخفي. انقل للـ async لما يبقى عندك 5 أو 6 حاجات async متشابكة، وساعتها <code>dependsOn</code> هتتولى الترتيب بدلك.</p>
+
+<h2>حاجات كمان</h2>
+
+<h3>التسجيل بواجهة مجرّدة</h3>
+
+<pre><code>sl.registerLazySingleton&lt;AuthRepository&gt;(() =&gt; AuthRepositoryImpl(sl(), sl()));</code></pre>
+
+<p>لاحظ إن النوع بين الأقواس هو <code>AuthRepository</code> — <strong>العقد</strong> — مش <code>AuthRepositoryImpl</code> اللي هو التنفيذ.</p>
+
+<p>النوع بين <code>&lt;&gt;</code> هو اللي <code>get_it</code> بيدوّر بيه. فالـ Cubits شايفة <code>AuthRepository</code> بس ومتعرفش <code>AuthRepositoryImpl</code> أصلاً — ودي نص فكرة الـ Clean Architecture.</p>
+
+<h3>إزاي sl() بتعرف تجيب إيه؟</h3>
+
+<pre><code>ApiClient(
+  tokenStore:  sl(),   →  TokenStore
+  networkInfo: sl(),   →  NetworkInfo
+  logger:      sl(),   →  AppLogger
+)</code></pre>
+
+<p>من <strong>نوع الباراميتر</strong> مش من اسمه. لو محتاج نوع مختلف عن المتوقع، اكتبه صراحة:</p>
+
+<pre><code>AuthRemoteDataSource(sl&lt;ApiClient&gt;().dio)   // عايزين الـ dio مش الـ ApiClient</code></pre>
+
+<h3>نسخ بأسماء</h3>
+
+<pre><code>sl.registerLazySingleton&lt;Dio&gt;(() =&gt; mainDio, instanceName: 'prism');
+sl.registerLazySingleton&lt;Dio&gt;(() =&gt; uploadDio, instanceName: 'files');
+
+sl&lt;Dio&gt;(instanceName: 'prism');</code></pre>
+
+<h3>فحص وتصفير</h3>
+
+<pre><code>sl.isRegistered&lt;ApiClient&gt;();
+await sl.reset();               // مفيد في الاختبارات</code></pre>
+
+<h2>غلطتين شائعتين</h2>
+
+<p><strong>١) sl() جوه تسجيل eager قبل ما التبعية تتسجّل</strong></p>
+
+<pre><code>sl.registerSingleton(ApiClient(tokenStore: sl()));            // ❌ بيتنفّذ فوراً
+sl.registerLazySingleton(() =&gt; ApiClient(tokenStore: sl()));  // ✅ بيتأجل</code></pre>
+
+<p><strong>٢) Cubit كـ lazySingleton مع BlocProvider</strong> — شوف القاعدة فوق.</p>
+
+<h2>القرار في ٣ أسئلة</h2>
+
+<div class="flow">
+محتاج await قبل ما تسجّله؟<br>
+&nbsp;&nbsp;&nbsp;أيوة ← اعمله بإيدك + <span class="ltr">registerSingleton</span><br>
+&nbsp;&nbsp;&nbsp;لأ ↓<br>
+<br>
+محتاج نسخة جديدة كل مرة؟<br>
+&nbsp;&nbsp;&nbsp;أيوة ← <span class="ltr">registerFactory</span> (+ Param لو محتاج معطيات)<br>
+&nbsp;&nbsp;&nbsp;لأ &nbsp;← <span class="ltr">registerLazySingleton</span> &nbsp;← <span class="good">الافتراضي</span>
+</div>
+
+<h2>الوضع الحالي في المشروع</h2>
+
+<table>
+  <tr><th>الحاجة</th><th>التسجيل</th><th>ليه</th></tr>
+  <tr><td><code>AppLogger</code></td><td>Singleton</td><td>أول حاجة، عشان يسجّل فشل التهيئة</td></tr>
+  <tr><td><code>SecureStore</code></td><td>LazySingleton</td><td>نسخة واحدة، تقدر تستنى</td></tr>
+  <tr><td><code>Connectivity</code></td><td>LazySingleton</td><td>نسخة واحدة، تقدر تستنى</td></tr>
+  <tr><td><code>NetworkInfo</code></td><td>LazySingleton</td><td>نسخة واحدة، تقدر تستنى</td></tr>
+  <tr><td><code>SharedPreferences</code></td><td>Singleton</td><td><code>getInstance()</code> async</td></tr>
+  <tr><td><code>LocaleCubit</code></td><td>Factory</td><td><code>BlocProvider</code> بيقفلها</td></tr>
+  <tr><td><code>TokenStore</code></td><td>Singleton</td><td><code>restore()</code> لازم تخلص قبل الـ router</td></tr>
+  <tr><td><code>ApiClient</code></td><td>LazySingleton</td><td>سلسلة interceptors واحدة للتطبيق كله</td></tr>
+  <tr><td><code>AuthRemoteDataSource</code></td><td>LazySingleton</td><td>مفيش حالة</td></tr>
+  <tr><td><code>AuthRepository</code></td><td>LazySingleton</td><td>مفيش حالة، ومسجّل بالعقد</td></tr>
+  <tr><td><code>LoginUseCase</code> وإخواتها</td><td>Factory</td><td>خفيفة ومفيهاش حالة</td></tr>
+  <tr><td><code>AuthCubit</code></td><td>Factory</td><td><code>BlocProvider</code> بيقفلها</td></tr>
+</table>
+
+<footer>
+  مشروع app_structure — Prism API &nbsp;·&nbsp; المصدر: <code>docs/dependency-injection.md</code>
+</footer>
+
+</body>
+</html>

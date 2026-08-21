@@ -28,7 +28,6 @@ class ApiClient {
            },
          ),
        ) {
-    /// Should be sorted
     dio.interceptors.add(ConnectivityInterceptor(networkInfo));
     dio.interceptors.add(AuthInterceptor(tokenStore));
     dio.interceptors.add(SessionExpiredInterceptor(tokenStore));

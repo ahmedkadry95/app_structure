@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'core/di/injection.dart';
+import 'core/l10n/l10n_extension.dart';
 import 'core/locale/locale_cubit.dart';
 import 'core/network/token_store.dart';
 import 'core/router/app_router.dart';
@@ -29,7 +30,7 @@ class _AppState extends State<App> {
       ],
       child: BlocBuilder<LocaleCubit, Locale>(
         builder: (context, locale) => MaterialApp.router(
-          onGenerateTitle: (context) => AppL10n.of(context).appTitle,
+          onGenerateTitle: (context) => context.l10n.appTitle,
           debugShowCheckedModeBanner: false,
           theme: AppTheme.light,
           darkTheme: AppTheme.dark,

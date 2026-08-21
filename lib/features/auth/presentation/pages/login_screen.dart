@@ -4,7 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/l10n/failure_l10n.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../core/widgets/language_button.dart';
-import '../../../../l10n/app_localizations.dart';
+import '../../../../core/l10n/l10n_extension.dart';
 import '../cubit/auth_cubit.dart';
 import '../cubit/auth_state.dart';
 
@@ -40,7 +40,7 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final l = AppL10n.of(context);
+    final l = context.l10n;
 
     return Scaffold(
       body: SafeArea(

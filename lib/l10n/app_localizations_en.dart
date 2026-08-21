@@ -30,6 +30,11 @@ class AppL10nEn extends AppL10n {
   String get loginPasswordRequired => 'Enter your password';
 
   @override
+  String homeGreeting(String name) {
+    return 'Welcome, $name';
+  }
+
+  @override
   String get homeTitle => 'Home';
 
   @override
@@ -71,4 +76,7 @@ class AppL10nEn extends AppL10n {
 
   @override
   String get errorUnexpected => 'Something went wrong';
+
+  @override
+  String get test => 'TEST';
 }

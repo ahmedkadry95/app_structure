@@ -139,6 +139,12 @@ abstract class AppL10n {
   /// **'اكتب كلمة المرور'**
   String get loginPasswordRequired;
 
+  /// ترحيب فوق بيانات الجلسة في الشاشة الرئيسية
+  ///
+  /// In ar, this message translates to:
+  /// **'أهلاً، {name}'**
+  String homeGreeting(String name);
+
   /// No description provided for @homeTitle.
   ///
   /// In ar, this message translates to:
@@ -222,6 +228,12 @@ abstract class AppL10n {
   /// In ar, this message translates to:
   /// **'حصل خطأ غير متوقع'**
   String get errorUnexpected;
+
+  /// No description provided for @test.
+  ///
+  /// In ar, this message translates to:
+  /// **'تجريبي'**
+  String get test;
 }
 
 class _AppL10nDelegate extends LocalizationsDelegate<AppL10n> {

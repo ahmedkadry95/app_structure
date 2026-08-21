@@ -10,6 +10,8 @@
   "loginUsernameRequired": "Enter your username",
   "loginPasswordRequired": "Enter your password",
 
+  "homeGreeting": "Welcome, {name}",
+
   "homeTitle": "Home",
   "homeLogout": "Sign out",
   "homeCompany": "Company",
@@ -25,5 +27,6 @@
   "errorSessionExpired": "Your session expired, please sign in again",
   "errorInvalidCredentials": "Incorrect username or password",
   "errorServer": "The server returned an error",
-  "errorUnexpected": "Something went wrong"
+  "errorUnexpected": "Something went wrong",
+  "test": "TEST"
 }

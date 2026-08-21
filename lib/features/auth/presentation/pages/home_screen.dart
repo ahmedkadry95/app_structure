@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../core/l10n/failure_l10n.dart';
+import '../../../../core/l10n/l10n_extension.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../core/widgets/language_button.dart';
-import '../../../../l10n/app_localizations.dart';
 import '../../domain/entities/session.dart';
 import '../cubit/auth_cubit.dart';
 import '../cubit/auth_state.dart';
@@ -31,16 +31,14 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final l = AppL10n.of(context);
-
     return Scaffold(
       appBar: AppBar(
-        title: Text(l.homeTitle),
+        title: Text(context.l10n.homeTitle),
         actions: [
           const LanguageButton(),
           IconButton(
             icon: const Icon(Icons.logout),
-            tooltip: l.homeLogout,
+            tooltip: context.l10n.homeLogout,
             onPressed: () => context.read<AuthCubit>().logout(),
           ),
         ],
@@ -62,16 +60,15 @@ class _HomeScreenState extends State<HomeScreen> {
 
 class _SessionDetails extends StatelessWidget {
   final Session session;
+
   const _SessionDetails({required this.session});
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final l = AppL10n.of(context);
-
     return ListView(
       padding: const EdgeInsets.all(AppTheme.spacingMd),
       children: [
+        const SizedBox(height: AppTheme.spacingMd),
         Card(
           child: Padding(
             padding: const EdgeInsets.all(AppTheme.spacingMd),
@@ -89,13 +86,7 @@ class _SessionDetails extends StatelessWidget {
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        session.employeeName,
-                        style: theme.textTheme.titleMedium,
-                      ),
-                      Text(session.username, style: theme.textTheme.bodySmall),
-                    ],
+                    children: [Text(context.l10n.test), Text(session.username)],
                   ),
                 ),
               ],
@@ -103,10 +94,13 @@ class _SessionDetails extends StatelessWidget {
           ),
         ),
         const SizedBox(height: AppTheme.spacingMd),
-        _InfoTile(label: l.homeCompany, value: session.subsidiaryName),
-        _InfoTile(label: l.homeBranch, value: session.storeName),
-        _InfoTile(label: l.homeCurrency, value: session.currency),
-        _InfoTile(label: l.homeSessionId, value: session.sid),
+        _InfoTile(
+          label: context.l10n.homeCompany,
+          value: session.subsidiaryName,
+        ),
+        _InfoTile(label: context.l10n.homeBranch, value: session.storeName),
+        _InfoTile(label: context.l10n.homeCurrency, value: session.currency),
+        _InfoTile(label: context.l10n.homeSessionId, value: session.sid),
       ],
     );
   }
@@ -115,6 +109,7 @@ class _SessionDetails extends StatelessWidget {
 class _InfoTile extends StatelessWidget {
   final String label;
   final String value;
+
   const _InfoTile({required this.label, required this.value});
 
   @override
@@ -130,6 +125,7 @@ class _InfoTile extends StatelessWidget {
 class _CenteredMessage extends StatelessWidget {
   final String message;
   final VoidCallback onRetry;
+
   const _CenteredMessage({required this.message, required this.onRetry});
 
   @override
@@ -150,7 +146,7 @@ class _CenteredMessage extends StatelessWidget {
           OutlinedButton.icon(
             onPressed: onRetry,
             icon: const Icon(Icons.refresh),
-            label: Text(AppL10n.of(context).commonRetry),
+            label: Text(context.l10n.commonRetry),
           ),
         ],
       ),

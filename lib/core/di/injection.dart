@@ -19,9 +19,7 @@ import '../storage/secure_store.dart';
 
 final sl = GetIt.instance;
 
-/// نقطة تركيب المشروع كله — الترتيب هنا هو الـ object graph.
 Future<void> init() async {
-  // اللوجر أول حاجة — عشان يقدر يسجّل فشل التهيئة نفسها
   final logger = AppLogger.create();
   appLog = logger;
   sl.registerSingleton(logger);
@@ -33,13 +31,9 @@ Future<void> init() async {
   sl.registerLazySingleton(() => Connectivity());
   sl.registerLazySingleton(() => NetworkInfo(sl()));
 
-  // الـ prefs بتتحمّل هنا عشان الـ LocaleCubit يقرا اللغة المحفوظة
-  // بشكل متزامن وأول إطار يترسم صح من غير رفرفة
   sl.registerSingleton(await SharedPreferences.getInstance());
-  sl.registerLazySingleton(() => LocaleCubit(sl()));
+  sl.registerFactory(() => LocaleCubit(sl()));
 
-  // التوكن بيترجع من الـ storage قبل ما الـ UI يتبني عشان الـ router
-  // يعرف من أول لحظة يوديه فين
   final tokenStore = TokenStore(sl());
   await tokenStore.restore();
   sl.registerSingleton(tokenStore);

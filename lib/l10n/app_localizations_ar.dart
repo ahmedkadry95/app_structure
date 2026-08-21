@@ -30,6 +30,11 @@ class AppL10nAr extends AppL10n {
   String get loginPasswordRequired => 'اكتب كلمة المرور';
 
   @override
+  String homeGreeting(String name) {
+    return 'أهلاً، $name';
+  }
+
+  @override
   String get homeTitle => 'الرئيسية';
 
   @override
@@ -70,4 +75,7 @@ class AppL10nAr extends AppL10n {
 
   @override
   String get errorUnexpected => 'حصل خطأ غير متوقع';
+
+  @override
+  String get test => 'تجريبي';
 }

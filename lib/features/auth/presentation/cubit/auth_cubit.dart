@@ -27,8 +27,6 @@ class AuthCubit extends Cubit<AuthState> {
     _emitIfOpen(result.when(success: AuthSuccess.new, failure: AuthError.new));
   }
 
-  /// بتتنادى لما التطبيق يفتح وفيه توكن محفوظ — بتتأكد إنه لسه صالح.
-  /// لو مات، الـ SessionExpiredInterceptor بيمسحه والـ router بيرجّع للوجين.
   Future<void> loadSession() async {
     emit(const AuthLoading());
     final result = await getSessionUseCase();
@@ -40,15 +38,11 @@ class AuthCubit extends Cubit<AuthState> {
       await logoutUseCase();
       _emitIfOpen(const AuthInitial());
     } catch (e, stackTrace) {
-      // مسح التوكن فشل (الـ keychain مقفول مثلاً). منسيبش الاستثناء يطلع
-      // للـ onPressed، وفي نفس الوقت منقولش للمستخدم إنه خرج وهو لسه داخل.
       appLog.error('فشل تسجيل الخروج', e, stackTrace);
       _emitIfOpen(const AuthError(UnexpectedFailure()));
     }
   }
 
-  /// كل الـ emits هنا بتحصل بعد await، والمستخدم ممكن يكون قافل الشاشة
-  /// في النص — من غير الحارس ده الـ Cubit بيرمي StateError.
   void _emitIfOpen(AuthState state) {
     if (!isClosed) emit(state);
   }

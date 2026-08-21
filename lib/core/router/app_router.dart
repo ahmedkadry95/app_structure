@@ -14,27 +14,23 @@ abstract class Routes {
   static const logs = '/logs';
 }
 
-/// الـ redirect بيبص على التوكن بس.
-/// ولأن الـ TokenStore ChangeNotifier، أي مسح للتوكن (زي لما السيرفر
-/// يقول Security.5) بيرجّع المستخدم للوجين لوحده من غير أي كود في الشاشات.
 GoRouter createRouter(TokenStore tokenStore) => GoRouter(
   refreshListenable: tokenStore,
   initialLocation: Routes.home,
-  observers: [TalkerRouteObserver(sl<AppLogger>().talker)],
+  // في الـ debug بس — الـ observer بيتنادى مع كل تنقّل، ومفيش داعي
+  // يشتغل في الإنتاج طالما الـ logger أصلاً مش هيطبع مستوى info
+  observers: [if (kDebugMode) TalkerRouteObserver(sl<AppLogger>().talker)],
   routes: [
     GoRoute(path: Routes.login, builder: (_, _) => const LoginScreen()),
     GoRoute(path: Routes.home, builder: (_, _) => const HomeScreen()),
-    // شاشة اللوجات في الـ debug بس — في الإنتاج مفيش تاريخ محفوظ أصلاً
     if (kDebugMode)
       GoRoute(
         path: Routes.logs,
         builder: (_, _) => TalkerScreen(talker: sl<AppLogger>().talker),
       ),
   ],
-  redirect: (_, state) {
-    // شاشة اللوجات مش محتاجة جلسة — لازم توصلها والتطبيق واقع
+  redirect: (context, state) {
     if (state.matchedLocation == Routes.logs) return null;
-
     final onLoginPage = state.matchedLocation == Routes.login;
     if (!tokenStore.isLoggedIn) return onLoginPage ? null : Routes.login;
     return onLoginPage ? Routes.home : null;
