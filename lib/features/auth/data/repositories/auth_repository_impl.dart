@@ -18,8 +18,6 @@ class AuthRepositoryImpl implements AuthRepository {
   }) => remote.login(username: username, password: password).then((
     session,
   ) async {
-    // نجاح اللوجين → نحفظ التوكن، والـ AuthInterceptor هيحقنه في كل
-    // الريكوستات الجاية تلقائي
     await tokenStore.save(token: session.token, nonce: session.nonce);
     return session;
   }).toResult();

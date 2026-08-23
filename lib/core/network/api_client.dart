@@ -9,7 +9,6 @@ import 'interceptors/session_expired_interceptor.dart';
 import 'network_info.dart';
 import 'token_store.dart';
 
-/// الـ Dio الوحيد في المشروع — كل الإعدادات والـ interceptors في مكان واحد.
 class ApiClient {
   final Dio dio;
 

@@ -6,26 +6,13 @@ import 'package:talker_flutter/talker_flutter.dart';
 import '../app_logger.dart';
 import '../log_redaction.dart';
 
-/// لوج شبكة مقروء — سطر واحد لكل حدث، ونفس الشكل لكل الريكوستات.
-///
-/// اتكتب بدل `talker_dio_logger` لتلات أسباب:
-/// 1. كان بيدي شكلين مختلفين: الريكوستات الحساسة (اللوجين) بتتفلتر منه
-///    وتتسجّل يدوي كـ `[info]` عادي، والباقي بياخد بوكس `[http-response]`
-/// 2. مكانش بيعرض مدة الريكوست
-/// 3. التنقية كانت على مستوى "افلتر الريكوست كله" بدل "نقّي اللي بيتطبع"
-///
-/// هنا كل حاجة بتعدي من [redactUri] و[redactHeaders] قبل ما تتكتب،
-/// فمفيش مسار يتخطى التنقية.
 class PrettyApiLogger extends Interceptor {
   final AppLogger logger;
 
-  /// عرض الهيدرز (القيم الحساسة بتفضل متخفية في الحالتين)
   final bool showHeaders;
 
-  /// عرض جسم الرد. مقفول افتراضياً — رد الجلسة من Prism ~100KB
   final bool showResponseBody;
 
-  /// أقصى عدد حروف من الـ body
   final int bodyLimit;
 
   PrettyApiLogger(
@@ -109,7 +96,6 @@ class PrettyApiLogger extends Interceptor {
 
   // ── التنسيق ────────────────────────────────────────────────
 
-  /// `GET  /security/login` — الـ baseUrl مبيتكررش في كل سطر
   String _target(RequestOptions options) {
     final path = options.uri.path.replaceFirst(
       Uri.parse(options.baseUrl).path,
@@ -118,7 +104,6 @@ class PrettyApiLogger extends Interceptor {
     return '${options.method.padRight(6)}${path.isEmpty ? '/' : path}';
   }
 
-  /// كل قيمة حساسة بتبقى *** — دي النقطة اللي بتمنع الباسورد يوصل الكونسول
   String _query(Uri uri) {
     final redacted = redactUri(uri);
     final q = redacted.contains('?') ? redacted.split('?').last : '';
@@ -154,7 +139,6 @@ class PrettyApiLogger extends Interceptor {
     return '  ·  ${DateTime.now().difference(started).inMilliseconds}ms';
   }
 
-  /// سبب الفشل بلغة السيرفر — بيوفّر عليك تفتح الـ body
   String _reason(DioException err) {
     final data = err.response?.data;
     if (data is Map || data is String) {

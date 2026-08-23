@@ -26,8 +26,6 @@ class AuthSuccess extends AuthState {
   List<Object?> get props => [session];
 }
 
-/// شايلة الـ Failure كاملة مش String —
-/// عشان الـ UI يقدر يفرّق بين الأنواع ويترجمها بنفسه
 class AuthError extends AuthState {
   final Failure failure;
   const AuthError(this.failure);

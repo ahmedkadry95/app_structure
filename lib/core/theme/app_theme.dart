@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-/// ثيم مركزي — أي لون أو مسافة تتحط هنا، مش hardcoded جوه الـ widgets.
 class AppTheme {
   const AppTheme._();
 

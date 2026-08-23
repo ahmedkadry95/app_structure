@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import 'core/config/app_env.dart';
 import 'core/di/injection.dart';
 import 'core/l10n/l10n_extension.dart';
 import 'core/locale/locale_cubit.dart';
@@ -38,10 +39,30 @@ class _AppState extends State<App> {
           locale: locale,
           supportedLocales: AppL10n.supportedLocales,
           localizationsDelegates: AppL10n.localizationsDelegates,
-          builder: (context, child) =>
-              OfflineBanner(child: child ?? const SizedBox.shrink()),
+          builder: (context, child) => _EnvBanner(
+            child: OfflineBanner(child: child ?? const SizedBox.shrink()),
+          ),
         ),
       ),
+    );
+  }
+}
+
+class _EnvBanner extends StatelessWidget {
+  final Widget child;
+
+  const _EnvBanner({required this.child});
+
+  @override
+  Widget build(BuildContext context) {
+    final label = AppEnv.current.banner;
+    if (label == null) return child;
+
+    return Banner(
+      message: label,
+      location: BannerLocation.topEnd,
+      color: Colors.orange.shade700,
+      child: child,
     );
   }
 }

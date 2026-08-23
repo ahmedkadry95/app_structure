@@ -6,7 +6,18 @@ plugins {
 
 android {
     namespace = "com.example.app_structure"
-    compileSdk = flutter.compileSdkVersion
+    // 37 مش 36 (flutter.compileSdkVersion) لأن flutter_secure_storage
+    // بيطلبه. لو رجّعته للافتراضي البناء بيفشل بـ:
+    //   "Dependency ':flutter_secure_storage' requires ... version 37 or later"
+    compileSdk = 37
+
+    buildFeatures {
+        // مطلوبة عشان resValue في الـ flavors تشتغل.
+        // في AGP 9 الافتراضي false — من غيرها البناء بيفشل بـ
+        // "contains custom resource values, but the feature is disabled"
+        resValues = true
+    }
+
     ndkVersion = flutter.ndkVersion
 
     compileOptions {
@@ -30,6 +41,27 @@ android {
             // TODO: Add your own signing config for the release build.
             // Signing with the debug keys for now, so `flutter run --release` works.
             signingConfig = signingConfigs.getByName("debug")
+        }
+    }
+    flavorDimensions += "default"
+    productFlavors {
+        create("staging") {
+            dimension = "default"
+            applicationIdSuffix = ".staging"
+            versionNameSuffix = "-staging"
+            resValue(
+                type = "string",
+                name = "app_name",
+                value = "قهوة صوفا — تجريبي"
+            )
+        }
+        create("production") {
+            dimension = "default"
+            resValue(
+                type = "string",
+                name = "app_name",
+                value = "قهوة صوفا"
+            )
         }
     }
 }

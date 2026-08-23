@@ -8,7 +8,6 @@ library;
 
 const String redactedMark = '***';
 
-/// هيدرز مبنعرضش قيمتها أبداً (الأسماء بحروف صغيرة للمقارنة)
 const Set<String> sensitiveHeaders = {
   'auth-session',
   'auth-session-v9',

@@ -12,8 +12,6 @@ class SessionModel extends Session {
     required super.currency,
   });
 
-  /// بنقرا بتسامح: أي حقل ممكن يرجع رقم بدل نص من سيرفر Delphi،
-  /// و cast صريح كان هيرمي TypeError ويفشّل اللوجين كله بسبب حقل واحد.
   factory SessionModel.fromJson(Map<String, dynamic> json) => SessionModel(
     sid: _str(json['sid']),
     username: _str(json['username']),
@@ -27,8 +25,7 @@ class SessionModel extends Session {
 
   static String _str(dynamic v) => v?.toString() ?? '';
 
-  /// Prism بيرجع اللوجين جوه Array: `[{...session...}]`
-  /// الدالة دي بتتعامل مع Array أو Object عشان أي endpoint تاني.
+
   factory SessionModel.fromResponse(dynamic data) {
     final map = switch (data) {
       final List<dynamic> l when l.isNotEmpty && l.first is Map => l.first,

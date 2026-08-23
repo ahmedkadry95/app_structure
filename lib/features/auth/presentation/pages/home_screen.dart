@@ -20,9 +20,6 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    // فتحنا التطبيق وفيه توكن محفوظ بس مفيش بيانات جلسة في الذاكرة —
-    // نتأكد إن التوكن لسه صالح. لو مات، الـ interceptor بيمسحه
-    // والـ router بيرجّعنا للوجين تلقائي.
     final cubit = context.read<AuthCubit>();
     if (cubit.state is AuthInitial) {
       cubit.loadSession();

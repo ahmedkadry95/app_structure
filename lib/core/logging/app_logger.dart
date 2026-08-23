@@ -1,5 +1,6 @@
-import 'package:flutter/foundation.dart';
 import 'package:talker_flutter/talker_flutter.dart';
+
+import '../config/app_env.dart';
 
 /// الواجهة الوحيدة للوج في المشروع.
 ///
@@ -15,14 +16,11 @@ class AppLogger {
   /// احتمال إن حاجة حساسة تتسرّب من غير ما ناخد بالنا.
   factory AppLogger.create() => AppLogger(
     TalkerFlutter.init(
-      // التاريخ في الـ debug بس — هو اللي شاشة /logs بتقرا منه.
-      // الـ analyzer شايف kDebugMode = true فبيقول إن القيمة زيادة، لكنها
-      // في الإنتاج بتبقى false فعلاً — شيلها ونحتفظ بتاريخ اللوجات في الرام.
-      // ignore: avoid_redundant_argument_values
-      settings: TalkerSettings(useHistory: kDebugMode),
+      // التاريخ هو اللي شاشة /logs بتقرا منه — فمربوط بنفس الشرط
+      settings: TalkerSettings(useHistory: AppEnv.current.showDevTools),
       logger: TalkerLogger(
         settings: TalkerLoggerSettings(
-          level: kDebugMode ? LogLevel.debug : LogLevel.error,
+          level: AppEnv.current.showDevTools ? LogLevel.debug : LogLevel.error,
           // الافتراضي 110 — بيرسم إطار عرضه شاشة كاملة حوالين كل سطر
           maxLineWidth: 64,
         ),

@@ -3,20 +3,6 @@ import 'package:talker_flutter/talker_flutter.dart';
 
 import 'app_logger.dart';
 
-/// سطر واحد لكل تغيير حالة.
-///
-/// `TalkerBlocObserver` بيكتب 6 سطور للحاجة الواحدة:
-/// ```
-/// AuthCubit changed
-/// CURRENT state:
-/// AuthInitial()
-/// NEXT state:
-/// AuthLoading()
-/// ```
-/// اللي إحنا محتاجينه فعلاً هو: `AuthCubit  AuthInitial → AuthLoading`.
-///
-/// ملحوظة أمنية: بنطبع `nextState.toString()`، و`Session.toString` بيخفي
-/// التوكن — لولاه كان هيتكتب هنا مع كل لوجين ناجح.
 class CompactBlocObserver extends BlocObserver {
   final AppLogger logger;
   const CompactBlocObserver(this.logger);

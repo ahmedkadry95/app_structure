@@ -1,7 +1,5 @@
 import 'package:equatable/equatable.dart';
 
-/// جلسة Prism — الحقول اللي التطبيق محتاجها بس،
-/// مش الـ 100+ حقل اللي السيرفر بيرجعهم.
 class Session extends Equatable {
   final String sid;
   final String username;
